@@ -1,17 +1,14 @@
-var documentSvc = require('../services/documents')
 var page = require('page')
 var update = require('xfx').update
 
-module.exports = (state) => {
-  var documents = documentSvc()
-
+module.exports = (state, documents) => {
   return Object.freeze({
     editor: (ctx) => {
       state.route = 'editor'
       update()
     },
     list: (ctx) => {
-      documents.list()
+      documents.list(state.id_token)
         .then((docs) => {
           state.list.data = docs
           state.route = 'list'
@@ -30,25 +27,25 @@ module.exports = (state) => {
       })
     },
     create: (ctx) => {
-      documents.create(ctx.state.body).then((result) => {
+      documents.create(ctx.state.body, state.id_token).then((result) => {
         page.redirect('/')
       })
     },
     edit: (ctx) => {
-      documents.get(ctx.params.id).then((doc) => {
+      documents.get(ctx.params.id, state.id_token).then((doc) => {
         state.edit.data = doc
         state.route = 'edit'
         update()
       })
     },
     update: (ctx) => {
-      documents.update(ctx.state.body).then((result) => {
+      documents.update(ctx.state.body, state.id_token).then((result) => {
         page.redirect('/')
       })
     },
     remove: (ctx) => {
       if (confirm('Are you sure?')) {
-        documents.remove(ctx.state.body).then((result) => {
+        documents.remove(ctx.state.body, state.id_token).then((result) => {
           page.redirect('/')
         })
       }

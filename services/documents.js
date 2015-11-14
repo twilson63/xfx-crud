@@ -1,21 +1,10 @@
-var PouchDB = require('pouchdb')
-var db = PouchDB('documents')
-
-module.exports = () => {
+var P = require('bluebird')
+module.exports = (send) => {
   return Object.freeze({
-    list: () => db
-      .query(function (doc) {
-        emit({ _id: doc._id, name: doc.name })
-      })
-      .then((result) => {
-        return result.rows.map((d) => d.key)
-      })
-    ,
-    get: (doc) => db.get(doc),
-    create: (doc) => db.post(doc),
-    update: (doc) => db.put(doc),
-    remove: (doc) => db.remove(doc)
-
+    list: (token) => send('list', {}, token),
+    get: (doc, token) => send('get', doc, token),
+    create: (doc, token) => send('create', doc, token),
+    update: (doc, token) => send('update', doc, token),
+    remove: (doc, token) => send('remove', doc, token)
   })
-
 }
