@@ -2,7 +2,6 @@ var documentSvc = require('../services/documents')
 var page = require('page')
 var update = require('xfx').update
 
-
 module.exports = (state) => {
   var documents = documentSvc()
 
@@ -14,7 +13,6 @@ module.exports = (state) => {
     list: (ctx) => {
       documents.list()
         .then((docs) => {
-
           state.list.data = docs
           state.route = 'list'
           update()
@@ -32,8 +30,6 @@ module.exports = (state) => {
       })
     },
     create: (ctx) => {
-      console.log('create called')
-      console.log(ctx)
       documents.create(ctx.state.body).then((result) => {
         page.redirect('/')
       })
@@ -47,7 +43,7 @@ module.exports = (state) => {
     },
     update: (ctx) => {
       documents.update(ctx.state.body).then((result) => {
-        page.redirect('/' + ctx.state.body._id)
+        page.redirect('/')
       })
     },
     remove: (ctx) => {

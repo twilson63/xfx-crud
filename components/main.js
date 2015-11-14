@@ -11,7 +11,7 @@ var edit = require('./edit')
 
 function component () {
   return {
-    route: 'list',
+    route: '',
     list: list(),
     show: show(),
     edit: edit(),
@@ -25,16 +25,17 @@ var content = require('./helpers/content')
 
 function render (state) {
   return layout([
-    header('Bold', state.route, state.newData.actions.setMode, state.newData.mode),
-    content([
-      when(state.route === 'list')
-        .then(() => list.render(state.list)),
-      when(state.route === 'new')
-        .then(() => newData.render(state.newData)),
-      when(state.route === 'show')
-        .then(() => show.render(state.show)),
-      when(state.route === 'edit')
-        .then(() => edit.render(state.edit))
-    ])
+      header('Bold', state.route, state.newData.actions.setMode, state.newData.mode),
+      when(state.profile).then(() => content([
+        when(state.route === 'list')
+          .then(() => list.render(state.list)),
+        when(state.route === 'new')
+          .then(() => newData.render(state.newData)),
+        when(state.route === 'show')
+          .then(() => show.render(state.show)),
+        when(state.route === 'edit')
+          .then(() => edit.render(state.edit))
+      ])
+    )
   ])
 }

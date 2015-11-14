@@ -4,12 +4,13 @@ var main = require('./components/main')
 var state = app(main)
 
 var page = require('page')
-var pageBodyParser = require('page-body-parser')
+//var pageBodyParser = require('page-body-parser')
 
 var routes = require('./routes/documents')(state)
-
+var auth = require('./routes/auth')(state)
 // routes
-page('/editor', routes.editor)
+page('/login', auth.login)
+page('/logout', auth.logout)
 page('/update', routes.update)
 page('/create', routes.create)
 page('/remove', routes.remove)
@@ -21,4 +22,5 @@ page('/:id', routes.show)
 page('/', routes.list)
 
 page()
-pageBodyParser()
+
+page.redirect('/login')
