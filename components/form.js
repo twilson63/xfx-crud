@@ -7,6 +7,9 @@ var when = require('../lib/when-then')
 var ace = require('brace')
 require('brace/mode/javascript')
 require('brace/mode/html')
+require('brace/mode/markdown')
+require('brace/mode/css')
+
 require('brace/theme/monokai')
 
 var textfield = require('./helpers/textfield')
@@ -32,7 +35,9 @@ module.exports = (state) => {
       if (state.data.name && ~state.data.name.indexOf('.css')) {
         session.setMode('ace/mode/css')
       }
-
+      if (state.data.name && ~state.data.name.indexOf('.md')) {
+        session.setMode('ace/mode/markdown')
+      }
       if (!state.data.name) {
         session.setMode('ace/mode/' + state.mode)
       }

@@ -11,10 +11,10 @@ module.exports = (title, route, modeFn, currentMode) => {
       /* Add spacer, to align navigation to the right */,
       h('div.mdl-layout-spacer'),
       /* Navigation. We hide it in small screens. */,
-      when(route === 'list').then(() => h('nav.mdl-navigation.mdl-layout--large-screen-only', [
-        h('a.mdl-navigation__link', { attributes: {
-            'href': '/new'
-        } }, [ "New Document" ])
+      when(route === 'list').then(() => h('a.mdl-button.mdl-js-button.mdl-button--fab.mdl-button--colored', {
+        'href': '/new'
+      }, [
+        h('i.material-icons',['add'])
       ])),
       when(route === 'new').then(() => h('button.mdl-button.mdl-js-button', {
         className: currentMode === 'html' ? 'mdl-button--accent' : null,
@@ -27,7 +27,11 @@ module.exports = (title, route, modeFn, currentMode) => {
       when(route === 'new').then(() => h('button.mdl-button.mdl-js-button', {
         className: currentMode === 'css' ? 'mdl-button--accent' : null,
         'ev-click': sendClick(modeFn,'css')
-      }, ['CSS']))
+      }, ['CSS'])),
+      when(route === 'new').then(() => h('button.mdl-button.mdl-js-button', {
+        className: currentMode === 'markdown' ? 'mdl-button--accent' : null,
+        'ev-click': sendClick(modeFn,'markdown')
+      }, ['MD']))
 
       // h('button#mode.mdl-button.mdl-js-button.mdl-button--icon', [
       //   h('i.material-icons', ['more_vert'])
