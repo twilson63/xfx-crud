@@ -9,9 +9,13 @@ function component () {
   }
 }
 
+var grid = require('./helpers/grid')
+var cell = require('./helpers/cell')
+var card = require('./helpers/card')
+
 function render (state) {
-  var li = (v) => h('li', [
-    h('a', { href: '/' + v._id }, [v.name])
+  var li = (v) => cell(3, [
+    card(v.name, '/' + v._id + '/edit')
   ])
-  return h('ul', state.data.map(li))
+  return grid(state.data.map(li))
 }

@@ -8,6 +8,7 @@ var list = require('./list')
 var newData = require('./new')
 var show = require('./show')
 var edit = require('./edit')
+var editor = require('./editor')
 
 function component () {
   return {
@@ -15,23 +16,29 @@ function component () {
     list: list(),
     show: show(),
     edit: edit(),
-    newData: newData()
+    newData: newData(),
+    editor: editor()
   }
 }
 
+var layout = require('./helpers/layout')
+var header = require('./helpers/header')
+var content = require('./helpers/content')
+
 function render (state) {
-  return h('div', [
-    when(state.route === 'list')
-      .then(() => list.render(state.list)),
-    when(state.route === 'new')
-      .then(() => newData.render(state.newData)),
-    when(state.route === 'show')
-      .then(() => show.render(state.show)),
-    when(state.route === 'edit')
-      .then(() => edit.render(state.edit)),
-
-    when(state.route === 'list')
-      .then(() => h('a', {href: '/new'}, ['Add New']))
-
+  return layout([
+    header('Bold Text Editor - Documents', state.route),
+    content([
+      when(state.route === 'editor')
+        .then(() => editor.render(state.editor)),
+      when(state.route === 'list')
+        .then(() => list.render(state.list)),
+      when(state.route === 'new')
+        .then(() => newData.render(state.newData)),
+      when(state.route === 'show')
+        .then(() => show.render(state.show)),
+      when(state.route === 'edit')
+        .then(() => edit.render(state.edit))
+    ])
   ])
 }

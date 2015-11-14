@@ -10,7 +10,10 @@
   "author": "Tom",
   "license": "ISC",
   "dependencies": {
+    "brace": "^0.5.1",
     "docuri": "^4.2.1",
+    "gql": "^1.1.0",
+    "material-design-lite": "^1.0.6",
     "page": "^1.6.4",
     "page-body-parser": "^1.0.0",
     "uuid": "^2.0.1",

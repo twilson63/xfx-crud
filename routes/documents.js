@@ -7,6 +7,10 @@ module.exports = (state) => {
   var documents = documentSvc()
 
   return Object.freeze({
+    editor: (ctx) => {
+      state.route = 'editor'
+      update()
+    },
     list: (ctx) => {
       documents.list()
         .then((docs) => {
@@ -28,6 +32,8 @@ module.exports = (state) => {
       })
     },
     create: (ctx) => {
+      console.log('create called')
+      console.log(ctx)
       documents.create(ctx.state.body).then((result) => {
         page.redirect('/')
       })

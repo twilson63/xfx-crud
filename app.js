@@ -9,6 +9,7 @@ var pageBodyParser = require('page-body-parser')
 var routes = require('./routes/documents')(state)
 
 // routes
+page('/editor', routes.editor)
 page('/update', routes.update)
 page('/create', routes.create)
 page('/remove', routes.remove)
