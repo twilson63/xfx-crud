@@ -52,7 +52,7 @@ module.exports = (state) => {
   }
 
   var action = state.data._id ? '/update' : '/create'
-
+  var cancel = state.folder_id ? state.folder_id : ''
   return h('form', { 'ev-submit': sendSubmit(state.actions.submit) }, [
     hidden('type', 'document'),
     when(state.data._id).then(() => hidden('_id', state.data._id)),
@@ -60,7 +60,9 @@ module.exports = (state) => {
     h('input#docBody', { type: 'hidden', name: 'body', value: state.data.body}),
     h('div', { id: 'editor', 'my-hook': new Hook(), style: {height: '400px'}}),
     fab('done', { position: 'absolute', right: '100px' }), //, { position: 'absolute', top: '63px', right: '100px', 'z-index': '1000'}),
-    h('a.mdl-button.mdl-js-button.mdl-button--fab', {href: '/', style: { position: 'absolute', right: '30px' }}, [
+    h('a.mdl-button.mdl-js-button.mdl-button--fab', {
+      href: '/' + cancel,
+      style: { position: 'absolute', right: '30px' }}, [
       h('i.material-icons', 'close')
     ]),
     when(state.data._id).then(() => h('a.mdl-button.mdl-js-button.mdl-button--fab', {

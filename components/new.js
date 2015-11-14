@@ -12,14 +12,8 @@ function component () {
   var state = { data: {}, mode: 'html' }
   state.actions = bindState({
     setMode: function (state, mode) {
-      // var editor = ace.edit('editor')
-      // var session = editor.getSession()
-      // //session.setMode('ace/mode/javascript')
-      // session.setMode('ace/mode/' + mode)
-      // console.log('set mode to ' + mode)
       state.mode = mode
       update()
-
     },
     submit: function (state, body) {
       page('/create', { body: {

@@ -14,16 +14,16 @@ var documents = require('./services/documents')(send)
 /** routes **/
 var page = require('page')
 var routes = require('./routes/documents')(state, documents)
-var auth = require('./routes/auth')(state)
+var auth = require('./routes/auth')(state, documents)
 
 page('/login', auth.login)
 page('/logout', auth.logout)
+page('/folder', routes.folder)
 page('/update', routes.update)
 page('/create', routes.create)
 page('/remove', routes.remove)
 page('/new', routes.new)
 
-page('/:id/edit', routes.edit)
 page('/:id', routes.show)
 
 page('/', routes.list)

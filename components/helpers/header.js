@@ -3,16 +3,30 @@ var sendClick = require('xfx').sendClick
 
 var when = require('../../lib/when-then')
 
-module.exports = (title, route, modeFn, currentMode) => {
+module.exports = (title, route, modeFn, currentMode, list) => {
   return h('header.mdl-layout__header', [
     h('.mdl-layout__header-row', [
       /* Title */,
-      h('span.mdl-layout-title', [ title ]),
+      h('span.mdl-layout-title', [ title,
+        when(list.folder).then(() => ' - ' + list.folder)
+      ]),
       /* Add spacer, to align navigation to the right */,
       h('div.mdl-layout-spacer'),
       /* Navigation. We hide it in small screens. */,
+      when(route === 'list' && list.folder).then(() => h('a.mdl-button.mdl-js-button.mdl-button--fab', {
+        href: '/',
+        style: { marginRight: '10px'}
+      }, [
+        h('i.material-icons',['home'])
+      ])),
+      when(route === 'list').then(() => h('a.mdl-button.mdl-js-button.mdl-button--fab', {
+        href: '/folder',
+        style: { marginRight: '10px'}
+      }, [
+        h('i.material-icons',['folder'])
+      ])),
       when(route === 'list').then(() => h('a.mdl-button.mdl-js-button.mdl-button--fab.mdl-button--colored', {
-        'href': '/new'
+        href: '/new'
       }, [
         h('i.material-icons',['add'])
       ])),

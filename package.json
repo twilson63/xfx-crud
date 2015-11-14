@@ -4,6 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "browserify app.js -o www/bundle.js",
+    "assets": "cp node_modules/material-design-lite/dist/material.blue_grey-amber.min.css www & cp node_modules/material-design-lite/material.min.js www",
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -11,8 +14,10 @@
   "license": "ISC",
   "dependencies": {
     "bluebird": "^3.0.5",
+    "body": "^5.1.0",
     "brace": "^0.5.1",
     "docuri": "^4.2.1",
+    "ecstatic": "^1.2.0",
     "gql": "^1.1.0",
     "jsonwebtoken": "^5.4.1",
     "material-design-lite": "^1.0.6",
@@ -20,9 +25,11 @@
     "page": "^1.6.4",
     "page-body-parser": "^1.0.0",
     "palmettoflow-nodejs": "^1.0.1",
+    "send-data": "^8.0.0",
     "uuid": "^2.0.1",
     "vdom-to-html": "^2.2.0",
-    "xfx": "^1.2.0"
+    "xfx": "^1.2.0",
+    "xhr": "^2.2.0"
   },
   "devDependencies": {
     "rewire": "^2.4.0",

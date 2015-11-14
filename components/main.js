@@ -25,7 +25,7 @@ var content = require('./helpers/content')
 
 function render (state) {
   return layout([
-      header('Bold', state.route, state.newData.actions.setMode, state.newData.mode),
+      header('Bold', state.route, state.newData.actions.setMode, state.newData.mode, state.list),
       when(state.profile).then(() => content([
         when(state.route === 'list')
           .then(() => list.render(state.list)),

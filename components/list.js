@@ -15,7 +15,7 @@ var card = require('./helpers/card')
 
 function render (state) {
   var li = (v) => cell(2, [
-    card(v.name, '/' + v._id + '/edit')
+    card(v.name, '/' + v._id)
   ])
   return grid(state.data.map(li))
 }
