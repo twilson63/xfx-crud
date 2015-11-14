@@ -14,7 +14,6 @@ module.exports = (title, ref, style) => {
   } else if (~title.indexOf('md')) {
     bkg = "https://raw.githubusercontent.com/dcurtis/markdown-mark/master/png/208x128-solid.png"
   }
-  console.log(title + '-' + bkg)
   return h('.mdl-card.mdl-shadow--2dp',
     { style: s}, [
     h('.mdl-card--title.mdl-card--expand', {

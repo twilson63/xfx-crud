@@ -8,7 +8,6 @@ var list = require('./list')
 var newData = require('./new')
 var show = require('./show')
 var edit = require('./edit')
-var editor = require('./editor')
 
 function component () {
   return {
@@ -16,8 +15,7 @@ function component () {
     list: list(),
     show: show(),
     edit: edit(),
-    newData: newData(),
-    editor: editor()
+    newData: newData()
   }
 }
 
@@ -26,12 +24,9 @@ var header = require('./helpers/header')
 var content = require('./helpers/content')
 
 function render (state) {
-  console.log(state.newData.actions)
   return layout([
     header('Bold', state.route, state.newData.actions.setMode, state.newData.mode),
     content([
-      when(state.route === 'editor')
-        .then(() => editor.render(state.editor)),
       when(state.route === 'list')
         .then(() => list.render(state.list)),
       when(state.route === 'new')
