@@ -1,7 +1,9 @@
 var h = require('xfx').h
+var sendClick = require('xfx').sendClick
+
 var when = require('../../lib/when-then')
 
-module.exports = (title, route) => {
+module.exports = (title, route, modeFn, currentMode) => {
   return h('header.mdl-layout__header', [
     h('.mdl-layout__header-row', [
       /* Title */,
@@ -14,9 +16,18 @@ module.exports = (title, route) => {
             'href': '/new'
         } }, [ "New Document" ])
       ])),
-      when(route === 'new').then(() => h('button.mdl-button.mdl-js-button.mdl-button--accent', ['HTML'])),
-      when(route === 'new').then(() => h('button.mdl-button.mdl-js-button', ['JS'])),
-      when(route === 'new').then(() => h('button.mdl-button.mdl-js-button', ['CSS']))
+      when(route === 'new').then(() => h('button.mdl-button.mdl-js-button', {
+        className: currentMode === 'html' ? 'mdl-button--accent' : null,
+        'ev-click': sendClick(modeFn,'html')
+      }, ['HTML'])),
+      when(route === 'new').then(() => h('button.mdl-button.mdl-js-button', {
+        className: currentMode === 'javascript' ? 'mdl-button--accent' : null,
+        'ev-click': sendClick(modeFn,'javascript')
+      }, ['JS'])),
+      when(route === 'new').then(() => h('button.mdl-button.mdl-js-button', {
+        className: currentMode === 'css' ? 'mdl-button--accent' : null,
+        'ev-click': sendClick(modeFn,'css')
+      }, ['CSS']))
 
       // h('button#mode.mdl-button.mdl-js-button.mdl-button--icon', [
       //   h('i.material-icons', ['more_vert'])

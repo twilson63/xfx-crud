@@ -9,7 +9,8 @@ component.render = form
 
 function component () {
   var state = {
-    data: 0
+    data: 0,
+    mode: 'html'
   }
   state.actions = bindState({
     remove: function (state) {

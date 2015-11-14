@@ -26,8 +26,9 @@ var header = require('./helpers/header')
 var content = require('./helpers/content')
 
 function render (state) {
+  console.log(state.newData.actions)
   return layout([
-    header('Bold Text Editor - Documents', state.route),
+    header('Bold Text Editor - Documents', state.route, state.newData.actions.setMode, state.newData.mode),
     content([
       when(state.route === 'editor')
         .then(() => editor.render(state.editor)),

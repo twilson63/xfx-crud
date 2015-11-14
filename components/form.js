@@ -9,31 +9,43 @@ require('brace/mode/javascript')
 require('brace/mode/html')
 require('brace/theme/monokai')
 
-function Hook() {}
-Hook.prototype.hook = (node, propertyName, previousValue) => {
-  setTimeout(function() {
-    var model = document.querySelector('#docBody')
-    var editor = ace.edit(node)
-    editor.$blockScrolling = Infinity
-    var session = editor.getSession()
-    //session.setMode('ace/mode/javascript')
-    session.setMode('ace/mode/html')
-    editor.setTheme('ace/theme/monokai')
-    // sync editor and input
-    session.setValue(model.value)
-    editor.getSession().on('change', function() {
-      model.value = editor.getSession().getValue()
-    })
-
-  }, 100)
-}
-
 var textfield = require('./helpers/textfield')
 var fab = require('./helpers/fab')
 var form = require('./helpers/form')
 var hidden = require('./helpers/hiddenfield')
 
 module.exports = (state) => {
+  function Hook() {}
+  Hook.prototype.hook = (node, propertyName, previousValue) => {
+    setTimeout(function() {
+      var model = document.querySelector('#docBody')
+      var editor = ace.edit(node)
+      editor.$blockScrolling = Infinity
+      var session = editor.getSession()
+      //session.setMode('ace/mode/javascript')
+      if (state.data.name && ~state.data.name.indexOf('.js')) {
+        session.setMode('ace/mode/javascript')
+      }
+      if (state.data.name && ~state.data.name.indexOf('.html')) {
+        session.setMode('ace/mode/html')
+      }
+      if (state.data.name && ~state.data.name.indexOf('.css')) {
+        session.setMode('ace/mode/css')
+      }
+
+      if (!state.data.name) {
+        session.setMode('ace/mode/' + state.mode)
+      }
+      editor.setTheme('ace/theme/monokai')
+      // sync editor and input
+      session.setValue(model.value)
+      editor.getSession().on('change', function() {
+        model.value = editor.getSession().getValue()
+      })
+
+    }, 100)
+  }
+
   var action = state.data._id ? '/update' : '/create'
 
   return h('form', { 'ev-submit': sendSubmit(state.actions.submit) }, [
