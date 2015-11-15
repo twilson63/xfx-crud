@@ -12,8 +12,11 @@ var rdb = PouchDB(remoteDb)
 rdb.putIfNotExists('_design/filters', {
     language: 'javascript',
     filters: {
-      owner: function (doc, params) {
-        return doc.profile.user_id === params.user_id
+      owner: function (doc, req) {
+        if (doc.profile && doc.profile.user_id !== req.query.user_id) {
+          return false
+        }
+        return true
       }.toString()
     }
   }, function (err, result) {

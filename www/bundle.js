@@ -1,437 +1,436 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var app = require('xfx')
+'use strict';
 
-var main = require('./components/main')
-var state = app(main)
+var app = require('xfx');
+
+var main = require('./components/main');
+var state = app(main);
 
 /** palmetto flow **/
-var palmetto = require('palmettoflow-nodejs')
-var ee = palmetto()
-var localDataSource = require('./local/documents')(ee)
+var palmetto = require('palmettoflow-nodejs');
+var ee = palmetto();
+var localDataSource = require('./local/documents')(ee);
 
-var send = require('./lib/palmetto-send')(ee)
-var documents = require('./services/documents')(send)
+var send = require('./lib/palmetto-send')(ee);
+var documents = require('./services/documents')(send);
 
 /** routes **/
-var page = require('page')
-var routes = require('./routes/documents')(state, documents)
-var auth = require('./routes/auth')(state, documents)
+var page = require('page');
+var routes = require('./routes/documents')(state, documents);
+var auth = require('./routes/auth')(state, documents);
 
-page('/login', auth.login)
-page('/logout', auth.logout)
-page('/folder', routes.folder)
-page('/update', routes.update)
-page('/create', routes.create)
-page('/remove', routes.remove)
-page('/new', routes.new)
+page('/login', auth.login);
+page('/logout', auth.logout);
+page('/folder', routes.folder);
+page('/update', routes.update);
+page('/create', routes.create);
+page('/remove', routes.remove);
+page('/new', routes.new);
 
-page('/:id', routes.show)
+page('/:id', routes.show);
 
-page('/', routes.list)
+page('/', routes.list);
 
-page()
+page();
 
-page.redirect('/login')
+page.redirect('/login');
 
 },{"./components/main":15,"./lib/palmetto-send":20,"./local/documents":22,"./routes/auth":242,"./routes/documents":243,"./services/documents":244,"page":94,"palmettoflow-nodejs":95,"xfx":238}],2:[function(require,module,exports){
-var h = require('xfx').h
-var bindState = require('xfx').bindState
+'use strict';
 
-var form = require('./form')
-var page = require('page')
+var h = require('xfx').h;
+var bindState = require('xfx').bindState;
 
-module.exports = component
-component.render = form
+var form = require('./form');
+var page = require('page');
 
-function component () {
+module.exports = component;
+component.render = form;
+
+function component() {
   var state = {
     data: 0,
     mode: 'html'
-  }
+  };
   state.actions = bindState({
-    remove: function (state) {
-      page('/remove', { body: state.data })
+    remove: function remove(state) {
+      page('/remove', { body: state.data });
     },
-    submit: function (state, body) {
+    submit: function submit(state, body) {
       page('/update', { body: {
-        _id: body._id,
-        _rev: body._rev,
-        type: body.type,
-        name: body.name,
-        body: body.body
-      }})
+          _id: body._id,
+          _rev: body._rev,
+          type: body.type,
+          name: body.name,
+          body: body.body
+        } });
     }
-  }, state)
-  return state
+  }, state);
+  return state;
 }
 
 },{"./form":3,"page":94,"xfx":238}],3:[function(require,module,exports){
-var h = require('xfx/h')
-var sendSubmit = require('xfx').sendSubmit
-var sendClick = require('xfx').sendClick
+'use strict';
 
-var when = require('../lib/when-then')
+var h = require('xfx/h');
+var sendSubmit = require('xfx').sendSubmit;
+var sendClick = require('xfx').sendClick;
 
-var ace = require('brace')
-require('brace/mode/javascript')
-require('brace/mode/html')
-require('brace/mode/markdown')
-require('brace/mode/css')
+var when = require('../lib/when-then');
 
-require('brace/theme/monokai')
+var ace = require('brace');
+require('brace/mode/javascript');
+require('brace/mode/html');
+require('brace/mode/markdown');
+require('brace/mode/css');
 
-var textfield = require('./helpers/textfield')
-var fab = require('./helpers/fab')
-var form = require('./helpers/form')
-var hidden = require('./helpers/hiddenfield')
+require('brace/theme/monokai');
 
-module.exports = (state) => {
+var textfield = require('./helpers/textfield');
+var fab = require('./helpers/fab');
+var form = require('./helpers/form');
+var hidden = require('./helpers/hiddenfield');
+
+module.exports = function (state) {
   function Hook() {}
-  Hook.prototype.hook = (node, propertyName, previousValue) => {
-    setTimeout(function() {
-      var model = document.querySelector('#docBody')
-      var editor = ace.edit(node)
-      editor.$blockScrolling = Infinity
-      var session = editor.getSession()
+  Hook.prototype.hook = function (node, propertyName, previousValue) {
+    setTimeout(function () {
+      var model = document.querySelector('#docBody');
+      var editor = ace.edit(node);
+      editor.$blockScrolling = Infinity;
+      var session = editor.getSession();
       //session.setMode('ace/mode/javascript')
       if (state.data.name && ~state.data.name.indexOf('.js')) {
-        session.setMode('ace/mode/javascript')
+        session.setMode('ace/mode/javascript');
       }
       if (state.data.name && ~state.data.name.indexOf('.html')) {
-        session.setMode('ace/mode/html')
+        session.setMode('ace/mode/html');
       }
       if (state.data.name && ~state.data.name.indexOf('.css')) {
-        session.setMode('ace/mode/css')
+        session.setMode('ace/mode/css');
       }
       if (state.data.name && ~state.data.name.indexOf('.md')) {
-        session.setMode('ace/mode/markdown')
+        session.setMode('ace/mode/markdown');
       }
       if (!state.data.name) {
-        session.setMode('ace/mode/' + state.mode)
+        session.setMode('ace/mode/' + state.mode);
       }
-      editor.setTheme('ace/theme/monokai')
+      editor.setTheme('ace/theme/monokai');
       // sync editor and input
-      session.setValue(model.value)
-      editor.getSession().on('change', function() {
-        model.value = editor.getSession().getValue()
-      })
+      session.setValue(model.value);
+      editor.getSession().on('change', function () {
+        model.value = editor.getSession().getValue();
+      });
+    }, 100);
+  };
 
-    }, 100)
-  }
-
-  var action = state.data._id ? '/update' : '/create'
-  var cancel = state.folder_id ? state.folder_id : ''
-  return h('form', { 'ev-submit': sendSubmit(state.actions.submit) }, [
-    hidden('type', 'document'),
-    when(state.data._id).then(() => hidden('_id', state.data._id)),
-    when(state.data._rev).then(() => hidden('_rev', state.data._rev)),
-    h('input#docBody', { type: 'hidden', name: 'body', value: state.data.body}),
-    h('div', { id: 'editor', 'my-hook': new Hook(), style: {height: '400px'}}),
-    fab('done', { position: 'absolute', right: '100px' }), //, { position: 'absolute', top: '63px', right: '100px', 'z-index': '1000'}),
-    h('a.mdl-button.mdl-js-button.mdl-button--fab', {
-      href: '/' + cancel,
-      style: { position: 'absolute', right: '30px' }}, [
-      h('i.material-icons', 'close')
-    ]),
-    when(state.data._id).then(() => h('a.mdl-button.mdl-js-button.mdl-button--fab', {
+  var action = state.data._id ? '/update' : '/create';
+  var cancel = state.folder_id ? state.folder_id : '';
+  return h('form', { 'ev-submit': sendSubmit(state.actions.submit) }, [hidden('type', 'document'), when(state.data._id).then(function () {
+    return hidden('_id', state.data._id);
+  }), when(state.data._rev).then(function () {
+    return hidden('_rev', state.data._rev);
+  }), h('input#docBody', { type: 'hidden', name: 'body', value: state.data.body }), h('div', { id: 'editor', 'my-hook': new Hook(), style: { height: '400px' } }), fab('done', { position: 'absolute', right: '100px' }), //, { position: 'absolute', top: '63px', right: '100px', 'z-index': '1000'}),
+  h('a.mdl-button.mdl-js-button.mdl-button--fab', {
+    href: '/' + cancel,
+    style: { position: 'absolute', right: '30px' } }, [h('i.material-icons', 'close')]), when(state.data._id).then(function () {
+    return h('a.mdl-button.mdl-js-button.mdl-button--fab', {
       'ev-click': sendClick(state.actions.remove),
-      style: { position: 'absolute', left: '30px' }}, [
-      h('i.material-icons', 'delete')
-    ])),
-    textfield('name', state.data.name, 'Name', { marginLeft: '150px'})
-  ])
-}
+      style: { position: 'absolute', left: '30px' } }, [h('i.material-icons', 'delete')]);
+  }), textfield('name', state.data.name, 'Name', { marginLeft: '150px' })]);
+};
 
 },{"../lib/when-then":21,"./helpers/fab":7,"./helpers/form":8,"./helpers/hiddenfield":11,"./helpers/textfield":13,"brace":42,"brace/mode/css":43,"brace/mode/html":44,"brace/mode/javascript":45,"brace/mode/markdown":46,"brace/theme/monokai":47,"xfx":238,"xfx/h":237}],4:[function(require,module,exports){
-var h = require('xfx').h
-var xtend = require('xfx').xtend
+'use strict';
 
-module.exports = (title, ref, style) => {
+var h = require('xfx').h;
+var xtend = require('xfx').xtend;
+
+module.exports = function (title, ref, style) {
   var s = xtend({
     height: '80px',
     width: '150px'
-  }, style)
-  var bkg = "/images/folder.jpg"
+  }, style);
+  var bkg = "/images/folder.jpg";
   if (~title.indexOf('.js')) {
-    bkg = "/images/js.jpg"
+    bkg = "/images/js.jpg";
   } else if (~title.indexOf('.css')) {
-    bkg = "/images/css.png"
+    bkg = "/images/css.png";
   } else if (~title.indexOf('.md')) {
-    bkg = "/images/md.png"
+    bkg = "/images/md.png";
   } else if (~title.indexOf('.html')) {
-    bkg = "/images/html.png"
+    bkg = "/images/html.png";
   }
-  return h('.mdl-card.mdl-shadow--2dp',
-    { style: s}, [
-    h('.mdl-card--title.mdl-card--expand', {
-      style: {
+  return h('.mdl-card.mdl-shadow--2dp', { style: s }, [h('.mdl-card--title.mdl-card--expand', {
+    style: {
       background: 'url("' + bkg + '") center / contain no-repeat' }
-    }, []),
-    h('.mdl-card__actions.mdl-card--border', [
-      h("a.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect",
-        { href: ref }, [
-        title
-      ])
-    ])
-  ])
-}
+  }, []), h('.mdl-card__actions.mdl-card--border', [h("a.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect", { href: ref }, [title])])]);
+};
 
 },{"xfx":238}],5:[function(require,module,exports){
-var h = require('xfx').h
+'use strict';
 
-module.exports = (size, contents) => {
-  return h('.mdl-cell.mdl-cell--' + size +'-col', contents)
-}
+var h = require('xfx').h;
+
+module.exports = function (size, contents) {
+  return h('.mdl-cell.mdl-cell--' + size + '-col', contents);
+};
 
 },{"xfx":238}],6:[function(require,module,exports){
-var h = require('xfx').h
+'use strict';
 
-module.exports = (contents) => {
-  return h('main.mdl-layout__content', contents)
-}
+var h = require('xfx').h;
+
+module.exports = function (contents) {
+  return h('main.mdl-layout__content', contents);
+};
 
 },{"xfx":238}],7:[function(require,module,exports){
-var h = require('xfx').h
+'use strict';
 
-module.exports = (icon, style) => {
-  return h('button.mdl-button.mdl-js-button.mdl-button--fab.mdl-button--colored', { style: style }, [
-    h('i.material-icons', icon)
-  ])
-}
+var h = require('xfx').h;
+
+module.exports = function (icon, style) {
+  return h('button.mdl-button.mdl-js-button.mdl-button--fab.mdl-button--colored', { style: style }, [h('i.material-icons', icon)]);
+};
 
 },{"xfx":238}],8:[function(require,module,exports){
-var h = require('xfx').h
+'use strict';
 
-module.exports = (action, contents) => {
-  return h('form', { method: 'POST', action: action }, contents)
-}
+var h = require('xfx').h;
+
+module.exports = function (action, contents) {
+  return h('form', { method: 'POST', action: action }, contents);
+};
 
 },{"xfx":238}],9:[function(require,module,exports){
-var h = require('xfx').h
+'use strict';
 
-module.exports = (contents) => {
-  return h('.mdl-grid', contents)
-}
+var h = require('xfx').h;
+
+module.exports = function (contents) {
+  return h('.mdl-grid', contents);
+};
 
 },{"xfx":238}],10:[function(require,module,exports){
-var h = require('xfx').h
-var sendClick = require('xfx').sendClick
+'use strict';
 
-var when = require('../../lib/when-then')
+var h = require('xfx').h;
+var sendClick = require('xfx').sendClick;
 
-module.exports = (title, route, modeFn, currentMode, list) => {
-  return h('header.mdl-layout__header', [
-    h('.mdl-layout__header-row', [
-      /* Title */,
-      h('span.mdl-layout-title', [ title,
-        when(list.folder).then(() => ' - ' + list.folder)
-      ]),
-      /* Add spacer, to align navigation to the right */,
-      h('div.mdl-layout-spacer'),
-      /* Navigation. We hide it in small screens. */,
-      when(route === 'list' && list.folder).then(() => h('a.mdl-button.mdl-js-button.mdl-button--fab', {
-        href: '/',
-        style: { marginRight: '10px'}
-      }, [
-        h('i.material-icons',['home'])
-      ])),
-      when(route === 'list').then(() => h('a.mdl-button.mdl-js-button.mdl-button--fab', {
-        href: '/folder',
-        style: { marginRight: '10px'}
-      }, [
-        h('i.material-icons',['folder'])
-      ])),
-      when(route === 'list').then(() => h('a.mdl-button.mdl-js-button.mdl-button--fab.mdl-button--colored', {
-        href: '/new'
-      }, [
-        h('i.material-icons',['add'])
-      ])),
-      when(route === 'new').then(() => h('button.mdl-button.mdl-js-button', {
-        className: currentMode === 'html' ? 'mdl-button--accent' : null,
-        'ev-click': sendClick(modeFn,'html')
-      }, ['HTML'])),
-      when(route === 'new').then(() => h('button.mdl-button.mdl-js-button', {
-        className: currentMode === 'javascript' ? 'mdl-button--accent' : null,
-        'ev-click': sendClick(modeFn,'javascript')
-      }, ['JS'])),
-      when(route === 'new').then(() => h('button.mdl-button.mdl-js-button', {
-        className: currentMode === 'css' ? 'mdl-button--accent' : null,
-        'ev-click': sendClick(modeFn,'css')
-      }, ['CSS'])),
-      when(route === 'new').then(() => h('button.mdl-button.mdl-js-button', {
-        className: currentMode === 'markdown' ? 'mdl-button--accent' : null,
-        'ev-click': sendClick(modeFn,'markdown')
-      }, ['MD']))
+var when = require('../../lib/when-then');
 
-      // h('button#mode.mdl-button.mdl-js-button.mdl-button--icon', [
-      //   h('i.material-icons', ['more_vert'])
-      // ]),
-      // h('ul.mdl-menu.mdl-menu--bottom-right.mdl-js-menu.mdl-js-ripple-effect', {for: 'mode'}, [
-      //   h('li.mdl-menu__item', ['HTML']),
-      //   h('li.mdl-menu__item', ['JS']),
-      //   h('li.mdl-menu__item', ['CSS'])
-      // ])
+module.exports = function (title, route, modeFn, currentMode, list) {
+  return h('header.mdl-layout__header', [h('.mdl-layout__header-row', [,
+  /* Title */
+  h('span.mdl-layout-title', [title, when(list.folder).then(function () {
+    return ' - ' + list.folder;
+  })]),,
+  /* Add spacer, to align navigation to the right */
+  h('div.mdl-layout-spacer'),,
+  /* Navigation. We hide it in small screens. */
+  when(route === 'list' && list.folder).then(function () {
+    return h('a.mdl-button.mdl-js-button.mdl-button--fab', {
+      href: '/',
+      style: { marginRight: '10px' }
+    }, [h('i.material-icons', ['home'])]);
+  }), when(route === 'list').then(function () {
+    return h('a.mdl-button.mdl-js-button.mdl-button--fab', {
+      href: '/folder',
+      style: { marginRight: '10px' }
+    }, [h('i.material-icons', ['folder'])]);
+  }), when(route === 'list').then(function () {
+    return h('a.mdl-button.mdl-js-button.mdl-button--fab.mdl-button--colored', {
+      href: '/new'
+    }, [h('i.material-icons', ['add'])]);
+  }), when(route === 'new').then(function () {
+    return h('button.mdl-button.mdl-js-button', {
+      className: currentMode === 'html' ? 'mdl-button--accent' : null,
+      'ev-click': sendClick(modeFn, 'html')
+    }, ['HTML']);
+  }), when(route === 'new').then(function () {
+    return h('button.mdl-button.mdl-js-button', {
+      className: currentMode === 'javascript' ? 'mdl-button--accent' : null,
+      'ev-click': sendClick(modeFn, 'javascript')
+    }, ['JS']);
+  }), when(route === 'new').then(function () {
+    return h('button.mdl-button.mdl-js-button', {
+      className: currentMode === 'css' ? 'mdl-button--accent' : null,
+      'ev-click': sendClick(modeFn, 'css')
+    }, ['CSS']);
+  }), when(route === 'new').then(function () {
+    return h('button.mdl-button.mdl-js-button', {
+      className: currentMode === 'markdown' ? 'mdl-button--accent' : null,
+      'ev-click': sendClick(modeFn, 'markdown')
+    }, ['MD']);
+  })
 
-    ])
-  ])
-}
+  // h('button#mode.mdl-button.mdl-js-button.mdl-button--icon', [
+  //   h('i.material-icons', ['more_vert'])
+  // ]),
+  // h('ul.mdl-menu.mdl-menu--bottom-right.mdl-js-menu.mdl-js-ripple-effect', {for: 'mode'}, [
+  //   h('li.mdl-menu__item', ['HTML']),
+  //   h('li.mdl-menu__item', ['JS']),
+  //   h('li.mdl-menu__item', ['CSS'])
+  // ])
+
+  ])]);
+};
 
 },{"../../lib/when-then":21,"xfx":238}],11:[function(require,module,exports){
-var h = require('xfx').h
+'use strict';
 
-module.exports = (name, value) => {
-  return h('input', { type: 'hidden', name: name, value: value})
-}
+var h = require('xfx').h;
+
+module.exports = function (name, value) {
+  return h('input', { type: 'hidden', name: name, value: value });
+};
 
 },{"xfx":238}],12:[function(require,module,exports){
-var h = require('xfx').h
+'use strict';
 
-module.exports = (contents) => {
-  return h('.mdl-layout.mdl-js-layout.mdl-layout--fixed-header', contents)
-}
+var h = require('xfx').h;
+
+module.exports = function (contents) {
+  return h('.mdl-layout.mdl-js-layout.mdl-layout--fixed-header', contents);
+};
 
 },{"xfx":238}],13:[function(require,module,exports){
-var h = require('xfx').h
+'use strict';
 
-module.exports = (model, value, label, style) => {
-  return h('.mdl-textfield.mdl-js-textfield', {style: style }, [
-    h('input#' + model + '.mdl-textfield__input', {
-      type: 'text',
-      name: model,
-      value: value
-    })
-  ])
-}
+var h = require('xfx').h;
+
+module.exports = function (model, value, label, style) {
+  return h('.mdl-textfield.mdl-js-textfield', { style: style }, [h('input#' + model + '.mdl-textfield__input', {
+    type: 'text',
+    name: model,
+    value: value
+  })]);
+};
 
 },{"xfx":238}],14:[function(require,module,exports){
-var h = require('xfx').h
+'use strict';
 
-module.exports = component
-component.render = render
+var h = require('xfx').h;
 
-function component () {
+module.exports = component;
+component.render = render;
+
+function component() {
   return {
-    data: [{ name: 'one', _id: 1}]
-  }
+    data: [{ name: 'one', _id: 1 }]
+  };
 }
 
-var grid = require('./helpers/grid')
-var cell = require('./helpers/cell')
-var card = require('./helpers/card')
+var grid = require('./helpers/grid');
+var cell = require('./helpers/cell');
+var card = require('./helpers/card');
 
-function render (state) {
-  var li = (v) => cell(2, [
-    card(v.name, '/' + v._id)
-  ])
-  return grid(state.data.map(li))
+function render(state) {
+  var li = function li(v) {
+    return cell(2, [card(v.name, '/' + v._id)]);
+  };
+  return grid(state.data.map(li));
 }
 
 },{"./helpers/card":4,"./helpers/cell":5,"./helpers/grid":9,"xfx":238}],15:[function(require,module,exports){
-var h = require('xfx').h
-var when = require('../lib/when-then')
+'use strict';
 
-module.exports = component
-component.render = render
+var h = require('xfx').h;
+var when = require('../lib/when-then');
 
-var list = require('./list')
-var newData = require('./new')
-var show = require('./show')
-var edit = require('./edit')
+module.exports = component;
+component.render = render;
 
-function component () {
+var list = require('./list');
+var newData = require('./new');
+var show = require('./show');
+var edit = require('./edit');
+
+function component() {
   return {
     route: '',
     list: list(),
     show: show(),
     edit: edit(),
     newData: newData()
-  }
+  };
 }
 
-var layout = require('./helpers/layout')
-var header = require('./helpers/header')
-var content = require('./helpers/content')
+var layout = require('./helpers/layout');
+var header = require('./helpers/header');
+var content = require('./helpers/content');
 
-function render (state) {
-  return layout([
-      header('Bold', state.route, state.newData.actions.setMode, state.newData.mode, state.list),
-      when(state.profile).then(() => content([
-        when(state.route === 'list')
-          .then(() => list.render(state.list)),
-        when(state.route === 'new')
-          .then(() => newData.render(state.newData)),
-        when(state.route === 'show')
-          .then(() => show.render(state.show)),
-        when(state.route === 'edit')
-          .then(() => edit.render(state.edit))
-      ])
-    )
-  ])
+function render(state) {
+  return layout([header('Bold', state.route, state.newData.actions.setMode, state.newData.mode, state.list), when(state.profile).then(function () {
+    return content([when(state.route === 'list').then(function () {
+      return list.render(state.list);
+    }), when(state.route === 'new').then(function () {
+      return newData.render(state.newData);
+    }), when(state.route === 'show').then(function () {
+      return show.render(state.show);
+    }), when(state.route === 'edit').then(function () {
+      return edit.render(state.edit);
+    })]);
+  })]);
 }
 
 },{"../lib/when-then":21,"./edit":2,"./helpers/content":6,"./helpers/header":10,"./helpers/layout":12,"./list":14,"./new":16,"./show":17,"xfx":238}],16:[function(require,module,exports){
-var h = require('xfx').h
-var bindState = require('xfx').bindState
-var update = require('xfx').update
+'use strict';
 
-var form = require('./form')
-var page = require('page')
+var h = require('xfx').h;
+var bindState = require('xfx').bindState;
+var update = require('xfx').update;
 
-module.exports = component
-component.render = form
+var form = require('./form');
+var page = require('page');
 
-function component () {
-  var state = { data: {}, mode: 'html' }
+module.exports = component;
+component.render = form;
+
+function component() {
+  var state = { data: {}, mode: 'html' };
   state.actions = bindState({
-    setMode: function (state, mode) {
-      state.mode = mode
-      update()
+    setMode: function setMode(state, mode) {
+      state.mode = mode;
+      update();
     },
-    submit: function (state, body) {
+    submit: function submit(state, body) {
       page('/create', { body: {
-        type: body.type,
-        name: body.name,
-        body: body.body
-      }})
+          type: body.type,
+          name: body.name,
+          body: body.body
+        } });
     }
-  }, state)
-  return state
+  }, state);
+  return state;
 }
 
 },{"./form":3,"page":94,"xfx":238}],17:[function(require,module,exports){
-var h = require('xfx').h
+'use strict';
 
-module.exports = component
-component.render = render
+var h = require('xfx').h;
 
-function component () {
+module.exports = component;
+component.render = render;
+
+function component() {
   return {
-    data: {_id: 1, name: 'Beep'}
-  }
+    data: { _id: 1, name: 'Beep' }
+  };
 }
 
-function render (state) {
-  return h('div', [
-    h('h1', state.data.name),
-    h('div', state.data.body),
-    h('ul', [
-      h('li', [ h('a', { href: '/' + state.data._id + '/edit'}, ['edit'])]),
-      h('form', { method: 'POST', action: '/remove'}, [
-        h('input', { type: 'hidden', name: '_id', value: state.data._id }),
-        h('input', { type: 'hidden', name: '_rev', value: state.data._rev }),
-        h('button', ['remove'])
-      ]),
-      h('li', [ h('a', { href: '/'}, ['Home'])])
-    ])
-
-  ])
+function render(state) {
+  return h('div', [h('h1', state.data.name), h('div', state.data.body), h('ul', [h('li', [h('a', { href: '/' + state.data._id + '/edit' }, ['edit'])]), h('form', { method: 'POST', action: '/remove' }, [h('input', { type: 'hidden', name: '_id', value: state.data._id }), h('input', { type: 'hidden', name: '_rev', value: state.data._rev }), h('button', ['remove'])]), h('li', [h('a', { href: '/' }, ['Home'])])])]);
 }
 
 },{"xfx":238}],18:[function(require,module,exports){
-var moment = require('moment')
-var uuid = require('uuid')
+'use strict';
 
-exports.request = (subject, verb, object, actor) => {
+var moment = require('moment');
+var uuid = require('uuid');
+
+exports.request = function (subject, verb, object, actor) {
   return Object.freeze({
     from: uuid.v4(),
     to: '/' + [subject, verb].join('/'),
@@ -440,10 +439,10 @@ exports.request = (subject, verb, object, actor) => {
     object: object,
     actor: actor,
     dateSubmitted: moment().utc().format()
-  })
-}
+  });
+};
 
-exports.response = (event, dataObject) => {
+exports.response = function (event, dataObject) {
   return Object.freeze({
     to: event.from,
     from: event.to,
@@ -452,10 +451,10 @@ exports.response = (event, dataObject) => {
     object: dataObject,
     dateSubmitted: event.dateSubmitted,
     duration: moment().diff(event.dateSubmitted)
-  })
-}
+  });
+};
 
-exports.responseError = (event, dataObject) => {
+exports.responseError = function (event, dataObject) {
   return Object.freeze({
     to: event.from,
     from: event.to,
@@ -465,129 +464,158 @@ exports.responseError = (event, dataObject) => {
     dateSubmitted: event.dateSubmitted,
     duration: moment().diff(event.dateSubmitted),
     error: true
-  })
-}
+  });
+};
 
 },{"moment":90,"uuid":196}],19:[function(require,module,exports){
-var response = require('../lib/palmetto-events').response
-var responseError = require('../lib/palmetto-events').responseError
+'use strict';
 
-exports.respond = (ee, event) => (result) => ee.emit('send', response(event, result))
-exports.error = (ee, event) => (err) => ee.emit('send', responseError(event, err))
+var response = require('../lib/palmetto-events').response;
+var responseError = require('../lib/palmetto-events').responseError;
+
+exports.respond = function (ee, event) {
+  return function (result) {
+    return ee.emit('send', response(event, result));
+  };
+};
+exports.error = function (ee, event) {
+  return function (err) {
+    return ee.emit('send', responseError(event, err));
+  };
+};
 
 },{"../lib/palmetto-events":18}],20:[function(require,module,exports){
+'use strict';
+
 var request = require('./palmetto-events').request;
-var P = require('bluebird')
+var P = require('bluebird');
 
-module.exports = (ee) => {
-  return (action, obj, token) => {
-    var event = request('documents', action, obj, { token: token })
+module.exports = function (ee) {
+  return function (action, obj, token) {
+    var event = request('documents', action, obj, { token: token });
 
-    return new P((resolve) => {
-      ee.on(event.from, (response) => resolve(response.object))
-      ee.emit('send', event)
-    })
-  }
-}
+    return new P(function (resolve) {
+      ee.on(event.from, function (response) {
+        return resolve(response.object);
+      });
+      ee.emit('send', event);
+    });
+  };
+};
 
 },{"./palmetto-events":18,"bluebird":40}],21:[function(require,module,exports){
-module.exports = (test) => {
+"use strict";
+
+module.exports = function (test) {
   return {
-    then: (fn) => test ? fn() : null,
-    otherwise: (fn) => !test ? fn() : null
-  }
-}
+    then: function then(fn) {
+      return test ? fn() : null;
+    },
+    otherwise: function otherwise(fn) {
+      return !test ? fn() : null;
+    }
+  };
+};
 
 },{}],22:[function(require,module,exports){
 (function (Buffer){
-var P = require('bluebird')
-var PouchDB = require('pouchdb')
-var db = PouchDB('documents')
-var jwt = require('jsonwebtoken')
-var respond = require('../lib/palmetto-respond').respond
-var error = require('../lib/palmetto-respond').error
+'use strict';
 
-module.exports = (ee, options) => {
-  var secret = null
-  var remoteDb = null
+var P = require('bluebird');
+var PouchDB = require('pouchdb');
+var db = PouchDB('documents');
+var jwt = require('jsonwebtoken');
+var respond = require('../lib/palmetto-respond').respond;
+var error = require('../lib/palmetto-respond').error;
 
-  function verify (token) {
-    return new P((resolve, reject) => {
-      jwt.verify(token, new Buffer(secret, 'base64'), (err, decoded) => {
-        if (err) return reject(err)
-        resolve(decoded)
-      })
-    })
+module.exports = function (ee, options) {
+  var secret = null;
+  var remoteDb = null;
+
+  function verify(token) {
+    return new P(function (resolve, reject) {
+      jwt.verify(token, new Buffer(secret, 'base64'), function (err, decoded) {
+        if (err) return reject(err);
+        resolve(decoded);
+      });
+    });
   }
 
-  ee.on('/documents/sync', (event) => {
-    secret = event.object.secret
-    remoteDb = PouchDB(event.object.remoteDb)
+  ee.on('/documents/sync', function (event) {
+    secret = event.object.secret;
+    remoteDb = PouchDB(event.object.remoteDb);
     PouchDB.sync(db, remoteDb, {
       live: true,
       retry: true,
       filter: 'filters/owner',
       query_params: { user_id: event.object.user_id }
-    })
-    console.log('syncing database')
-    respond(ee, event)({ok: true})
-  })
+    });
+    console.log('syncing database');
+    respond(ee, event)({ ok: true });
+  });
 
-  ee.on('/documents/folder', (event) => {
-    verify(event.actor.token).then((decoded) => db.query(function (doc) {
-      if (doc.parent) {
-        emit(doc.parent, { _id: doc._id, name: doc.name })
-      }
-    }, { key: event.object.folder }))
+  ee.on('/documents/folder', function (event) {
+    verify(event.actor.token).then(function (decoded) {
+      return db.query(function (doc) {
+        if (doc.parent) {
+          emit(doc.parent, { _id: doc._id, name: doc.name });
+        }
+      }, { key: event.object.folder });
+    })
     /* TODO: add a document to return back to previous folder */
-    .then((result) => result.rows.map((d) => d.value))
-    .then(respond(ee, event))
-    .catch((err) => {
-      console.log(err)
-      error(ee, event)
-    })
-  })
+    .then(function (result) {
+      return result.rows.map(function (d) {
+        return d.value;
+      });
+    }).then(respond(ee, event)).catch(function (err) {
+      console.log(err);
+      error(ee, event);
+    });
+  });
 
-  ee.on('/documents/list', (event) => {
-    verify(event.actor.token).then((decoded) => db.query(function (doc) {
-      if (!doc.parent) {
-        emit({ _id: doc._id, name: doc.name })
-      }
-    }))
-    .then((result) => result.rows.map((d) => d.key))
-    .then(respond(ee, event))
-    .catch((err) => {
-      console.log(err)
-      error(ee, event)
-    })
-  })
+  ee.on('/documents/list', function (event) {
+    verify(event.actor.token).then(function (decoded) {
+      return db.query(function (doc) {
+        if (!doc.parent) {
+          emit({ _id: doc._id, name: doc.name });
+        }
+      });
+    }).then(function (result) {
+      return result.rows.map(function (d) {
+        return d.key;
+      });
+    }).then(respond(ee, event)).catch(function (err) {
+      console.log(err);
+      error(ee, event);
+    });
+  });
 
-  ee.on('/documents/get', (event) => {
-    verify(event.actor.token)
-      .then((decoded) => db.get(event.object).then(respond(ee, event)))
-      .catch((err) => {
-        error(ee, event)
-      })
-  })
+  ee.on('/documents/get', function (event) {
+    verify(event.actor.token).then(function (decoded) {
+      return db.get(event.object).then(respond(ee, event));
+    }).catch(function (err) {
+      error(ee, event);
+    });
+  });
 
-  ee.on('/documents/create', (event) => {
-    verify(event.actor.token)
-      .then((decoded) => db.post(event.object).then(respond(ee, event)))
-      .catch(error(ee, event))
-  })
+  ee.on('/documents/create', function (event) {
+    verify(event.actor.token).then(function (decoded) {
+      return db.post(event.object).then(respond(ee, event));
+    }).catch(error(ee, event));
+  });
 
-  ee.on('/documents/update', (event) => {
-    verify(event.actor.token)
-      .then((decoded) => db.put(event.object).then(respond(ee, event)))
-      .catch(error(ee, event))
-  })
+  ee.on('/documents/update', function (event) {
+    verify(event.actor.token).then(function (decoded) {
+      return db.put(event.object).then(respond(ee, event));
+    }).catch(error(ee, event));
+  });
 
-  ee.on('/documents/remove', (event) => {
-    verify(event.actor.token)
-      .then((decoded) => db.remove(event.object).then(respond(ee, event)))
-      .catch(error(ee, event))
-  })
-}
+  ee.on('/documents/remove', function (event) {
+    verify(event.actor.token).then(function (decoded) {
+      return db.remove(event.object).then(respond(ee, event));
+    }).catch(error(ee, event));
+  });
+};
 
 }).call(this,require("buffer").Buffer)
 },{"../lib/palmetto-respond":19,"bluebird":40,"buffer":288,"jsonwebtoken":78,"pouchdb":173}],23:[function(require,module,exports){
@@ -57254,101 +57282,104 @@ function extend() {
 }
 
 },{}],242:[function(require,module,exports){
-var page = require('page')
-var update = require('xfx').update
-var xhr = require('xhr')
-var lock = new Auth0Lock('mxx0nXeiWtGozSiGwRAPiUnsGMnxwgzV', 'twilson63.auth0.com')
+'use strict';
 
-module.exports = (state, documents) => {
+var page = require('page');
+var update = require('xfx').update;
+var xhr = require('xhr');
+var lock = new Auth0Lock('mxx0nXeiWtGozSiGwRAPiUnsGMnxwgzV', 'twilson63.auth0.com');
+
+module.exports = function (state, documents) {
   return Object.freeze({
-    login: (ctx) => {
-      state.route = 'login'
+    login: function login(ctx) {
+      state.route = 'login';
       lock.show({
         closable: false
-      }, (err, profile, id_token) => {
-        if (err) { return console.log(err) }
-        state.profile = profile
-        state.id_token = id_token
+      }, function (err, profile, id_token) {
+        if (err) {
+          return console.log(err);
+        }
+        state.profile = profile;
+        state.id_token = id_token;
         // setup db sync
-        xhr.post('/keys',{
+        xhr.post('/keys', {
           json: {
             token: id_token
           }
-        }, (e,r,b) => {
-          if (e) return console.log(e)
-          b.user_id = profile.user_id
-          documents.sync(b).then((result) => page.redirect('/'))
-        })
-
-      })
+        }, function (e, r, b) {
+          if (e) return console.log(e);
+          b.user_id = profile.user_id;
+          documents.sync(b).then(function (result) {
+            return page.redirect('/');
+          });
+        });
+      });
     },
-    logout: (ctx) => {
-
-    }
-  })
-}
+    logout: function logout(ctx) {}
+  });
+};
 
 },{"page":94,"xfx":238,"xhr":239}],243:[function(require,module,exports){
-var page = require('page')
-var update = require('xfx').update
+'use strict';
 
-module.exports = (state, documents) => {
+var page = require('page');
+var update = require('xfx').update;
+
+module.exports = function (state, documents) {
   return Object.freeze({
-    folder: (ctx) => {
-      state.route = 'list'
-      var folder = prompt('Enter Folder Name')
+    folder: function folder(ctx) {
+      state.route = 'list';
+      var folder = prompt('Enter Folder Name');
       documents.create({
         type: 'folder',
         name: folder,
         profile: state.profile
-      }, state.id_token).then((result) => {
-        page('/')
-      })
-
+      }, state.id_token).then(function (result) {
+        page('/');
+      });
     },
-    list: (ctx) => {
-      state.list.folder = null
-      state.list.folder_id = null
-      documents.list(state.id_token)
-        .then((docs) => {
-          state.list.data = docs
-          state.route = 'list'
-          update()
-        })
+    list: function list(ctx) {
+      state.list.folder = null;
+      state.list.folder_id = null;
+      documents.list(state.id_token).then(function (docs) {
+        state.list.data = docs;
+        state.route = 'list';
+        update();
+      });
     },
-    new: () => {
-      state.route = 'new'
-      state.newData.folder_id = state.list.folder_id
-      update()
+    new: function _new() {
+      state.route = 'new';
+      state.newData.folder_id = state.list.folder_id;
+      update();
     },
-    show: (ctx) => {
-      documents.get(ctx.params.id, state.id_token).then((doc) => {
+    show: function show(ctx) {
+      documents.get(ctx.params.id, state.id_token).then(function (doc) {
         if (doc.type === 'document') {
-          state.edit.data = doc
-          state.edit.folder_id = state.list.folder_id
-          state.route = 'edit'
-          update()
+          state.edit.data = doc;
+          state.edit.folder_id = state.list.folder_id;
+          state.route = 'edit';
+          update();
         } else if (doc.type === 'folder') {
-          documents.folder(doc.name, state.id_token).then((docs) => {
-            state.list.data = docs
-            state.list.folder = doc.name
-            state.list.folder_id = doc._id
-            state.route = 'list'
-            update()
-          })
+          documents.folder(doc.name, state.id_token).then(function (docs) {
+            state.list.data = docs;
+            state.list.folder = doc.name;
+            state.list.folder_id = doc._id;
+            state.route = 'list';
+            update();
+          });
         }
-        return
-      })
+        return;
+      });
     },
-    create: (ctx) => {
-      ctx.state.body.profile = state.profile
-      if (state.list.folder) ctx.state.body.parent = state.list.folder
-      documents.create(ctx.state.body, state.id_token).then((result) => {
+    create: function create(ctx) {
+      ctx.state.body.profile = state.profile;
+      if (state.list.folder) ctx.state.body.parent = state.list.folder;
+      documents.create(ctx.state.body, state.id_token).then(function (result) {
         if (state.list.folder) {
-          return page.redirect('/' + state.list.folder_id)
+          return page.redirect('/' + state.list.folder_id);
         }
-        page.redirect('/')
-      })
+        page.redirect('/');
+      });
     },
     // edit: (ctx) => {
     //   documents.get(ctx.params.id, state.id_token).then((doc) => {
@@ -57358,39 +57389,55 @@ module.exports = (state, documents) => {
     //     update()
     //   })
     // },
-    update: (ctx) => {
-      ctx.state.body.profile = state.profile
-      if (state.list.folder) ctx.state.body.parent = state.list.folder
-      documents.update(ctx.state.body, state.id_token).then((result) => {
+    update: function update(ctx) {
+      ctx.state.body.profile = state.profile;
+      if (state.list.folder) ctx.state.body.parent = state.list.folder;
+      documents.update(ctx.state.body, state.id_token).then(function (result) {
         if (state.list.folder) {
-          return page.redirect('/' + state.list.folder_id)
+          return page.redirect('/' + state.list.folder_id);
         }
-        page.redirect('/')
-      })
+        page.redirect('/');
+      });
     },
-    remove: (ctx) => {
+    remove: function remove(ctx) {
       if (confirm('Are you sure?')) {
-        documents.remove(ctx.state.body, state.id_token).then((result) => {
-          page.redirect('/')
-        })
+        documents.remove(ctx.state.body, state.id_token).then(function (result) {
+          page.redirect('/');
+        });
       }
     }
-  })
-}
+  });
+};
 
 },{"page":94,"xfx":238}],244:[function(require,module,exports){
-var P = require('bluebird')
-module.exports = (send) => {
+'use strict';
+
+var P = require('bluebird');
+module.exports = function (send) {
   return Object.freeze({
-    sync: (config) => send('sync', config),
-    folder: (folder, token) => send('folder', { folder: folder }, token),
-    list: (token) => send('list', {}, token),
-    get: (doc, token) => send('get', doc, token),
-    create: (doc, token) => send('create', doc, token),
-    update: (doc, token) => send('update', doc, token),
-    remove: (doc, token) => send('remove', doc, token)
-  })
-}
+    sync: function sync(config) {
+      return send('sync', config);
+    },
+    folder: function folder(_folder, token) {
+      return send('folder', { folder: _folder }, token);
+    },
+    list: function list(token) {
+      return send('list', {}, token);
+    },
+    get: function get(doc, token) {
+      return send('get', doc, token);
+    },
+    create: function create(doc, token) {
+      return send('create', doc, token);
+    },
+    update: function update(doc, token) {
+      return send('update', doc, token);
+    },
+    remove: function remove(doc, token) {
+      return send('remove', doc, token);
+    }
+  });
+};
 
 },{"bluebird":40}],245:[function(require,module,exports){
 arguments[4][24][0].apply(exports,arguments)
