@@ -20,6 +20,7 @@ module.exports = (state, documents) => {
           }
         }, (e,r,b) => {
           if (e) return console.log(e)
+          b.user_id = profile.user_id
           documents.sync(b).then((result) => page.redirect('/'))
         })
 

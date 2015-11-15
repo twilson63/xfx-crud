@@ -23,7 +23,9 @@ module.exports = (ee, options) => {
     remoteDb = PouchDB(event.object.remoteDb)
     PouchDB.sync(db, remoteDb, {
       live: true,
-      retry: true
+      retry: true,
+      filter: 'filters/owner',
+      query_params: { user_id: event.object.user_id }
     })
     console.log('syncing database')
     respond(ee, event)({ok: true})

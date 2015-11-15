@@ -4,7 +4,44 @@ var jsonBody = require('body/json')
 var sendJSON = require('send-data/json')
 var jwt = require('jsonwebtoken')
 var secret = 'JGLe0b9UkFBmmnlHioo2e48sAgLj84ZcGYiG_IqY6sw1-tstqGa_JlXZ-c-jEmA0'
-var remoteDb = 'http://admin:admin@localhost:5984/bold'
+var remoteDb = process.env.COUCHDB || 'http://admin:admin@localhost:5984/bold'
+
+var PouchDB = require('pouchdb')
+PouchDB.plugin(require('pouchdb-upsert'))
+var rdb = PouchDB(remoteDb)
+rdb.putIfNotExists('_design/filters', {
+    language: 'javascript',
+    filters: {
+      owner: function (doc, params) {
+        return doc.profile.user_id === params.user_id
+      }.toString()
+    }
+  }, function (err, result) {
+  if (err) return console.log(err)
+  console.log(result)
+})
+
+rdb.putIfNotExists('_design/web', {
+    language: 'javascript',
+    views: {
+      urls: {
+        map: function (doc) {
+          var url = '/' + doc.profile.nickname
+          if (doc.type === 'document') {
+            if (doc.parent) {
+              url +=  '/' + doc.parent
+            }
+            url += '/' + doc.name
+          }
+          emit(url, doc.body)
+        }.toString()
+      }
+    }
+  }, function (err, result) {
+  if (err) return console.log(err)
+  console.log(result)
+})
+
 var server = http.createServer((req, res) => {
   if (req.method === 'POST' && req.url === '/keys') {
     jsonBody(req, res, (err, body) => {
