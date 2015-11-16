@@ -1,6 +1,8 @@
+/* app helpers */
 var app = require('xfx')
 
-var main = require('./components/main2')
+/* component root */
+var main = require('./components/main')
 var state = app(main)
 
 /** palmetto flow **/
@@ -30,5 +32,7 @@ page('/:id', routes.show)
 page('/', routes.list)
 
 page()
+
+// if (localStorage.getItem('token'))
 
 page.redirect('/login')

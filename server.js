@@ -3,7 +3,7 @@ var ecstatic = require('ecstatic')
 var jsonBody = require('body/json')
 var sendJSON = require('send-data/json')
 var jwt = require('jsonwebtoken')
-var secret = 'JGLe0b9UkFBmmnlHioo2e48sAgLj84ZcGYiG_IqY6sw1-tstqGa_JlXZ-c-jEmA0'
+var secret = process.env.JWT_SECRET || 'JGLe0b9UkFBmmnlHioo2e48sAgLj84ZcGYiG_IqY6sw1-tstqGa_JlXZ-c-jEmA0'
 var remoteDb = process.env.COUCHDB || 'http://admin:admin@localhost:5984/bold'
 
 var PouchDB = require('pouchdb')
@@ -21,7 +21,6 @@ rdb.putIfNotExists('_design/filters', {
     }
   }, function (err, result) {
   if (err) return console.log(err)
-  console.log(result)
 })
 
 rdb.putIfNotExists('_design/web', {
@@ -29,10 +28,12 @@ rdb.putIfNotExists('_design/web', {
     views: {
       urls: {
         map: function (doc) {
-          var url = '/' + doc.profile.nickname
+          var url = '/'
           if (doc.type === 'document') {
             if (doc.parent) {
-              url +=  '/' + doc.parent
+              url += doc.parent
+            } else {
+              url += doc.profile.nickname
             }
             url += '/' + doc.name
           }
