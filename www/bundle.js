@@ -54379,7 +54379,7 @@ function extend() {
 var page = require('page');
 var update = require('xfx').update;
 var xhr = require('xhr');
-var lock = new Auth0Lock('mxx0nXeiWtGozSiGwRAPiUnsGMnxwgzV', 'twilson63.auth0.com');
+var lock = new Auth0Lock('RvEB8fb5hXiGJYrpgZVAaBOc2rp3BYq2', 'twilson63.auth0.com');
 
 module.exports = function (state, documents) {
   return Object.freeze({
