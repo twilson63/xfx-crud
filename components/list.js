@@ -37,7 +37,10 @@ function render (state) {
       headerRow([
         title([
           h('span.mdl-layout--large-screen-only','C2C'),
-          when(state.folder).then(() => ' * ' + state.folder)
+          when(state.folder).then(() => [
+            ' * ',
+            h('a', { target: '_new', href: 'http://' + state.folder + '.w3foo.com' }, [state.folder])
+          ])
         ]),
         spacer(),
         when(state.folder).then(() => fab('a','keyboard_backspace', {

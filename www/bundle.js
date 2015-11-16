@@ -354,7 +354,7 @@ function render(state) {
   };
 
   return [header([headerRow([title([h('span.mdl-layout--large-screen-only', 'C2C'), when(state.folder).then(function () {
-    return ' * ' + state.folder;
+    return [' * ', h('a', { target: '_new', href: 'http://' + state.folder + '.w3foo.com' }, [state.folder])];
   })]), spacer(), when(state.folder).then(function () {
     return fab('a', 'keyboard_backspace', {
       href: '/' + (state.parent_id || ''),
