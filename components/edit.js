@@ -16,14 +16,8 @@ function component () {
     remove: function (state) {
       page('/remove', { body: state.data })
     },
-    submit: function (state, body) {
-      page('/update', { body: {
-        _id: body._id,
-        _rev: body._rev,
-        type: body.type,
-        name: body.name,
-        body: body.body
-      }})
+    save: function (state, close) {
+      page('/update', { body: state.data })
     }
   }, state)
   return state

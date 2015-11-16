@@ -1,9 +1,12 @@
 var P = require('bluebird')
 var PouchDB = require('pouchdb')
+PouchDB.plugin(require('pouchdb-upsert'))
+
 var db = PouchDB('documents')
-var jwt = require('jsonwebtoken')
+//var jwt = require('jsonwebtoken')
 var respond = require('../lib/palmetto-respond').respond
 var error = require('../lib/palmetto-respond').error
+var uuid = require('uuid')
 
 module.exports = (ee, options) => {
   var secret = null
@@ -11,10 +14,11 @@ module.exports = (ee, options) => {
 
   function verify (token) {
     return new P((resolve, reject) => {
-      jwt.verify(token, new Buffer(secret, 'base64'), (err, decoded) => {
-        if (err) return reject(err)
-        resolve(decoded)
-      })
+      //jwt.verify(token, new Buffer(secret, 'base64'), (err, decoded) => {
+        //if (err) return reject(err)
+        //resolve(decoded)
+        resolve({ok: true})
+      //})
     })
   }
 
@@ -27,7 +31,7 @@ module.exports = (ee, options) => {
       filter: 'filters/owner',
       query_params: { user_id: event.object.user_id }
     })
-    console.log('syncing database')
+    //console.log('syncing database')
     respond(ee, event)({ok: true})
   })
 
@@ -69,12 +73,14 @@ module.exports = (ee, options) => {
   })
 
   ee.on('/documents/create', (event) => {
+    // TODO: Need to confirm (folder + name) is unique
     verify(event.actor.token)
       .then((decoded) => db.post(event.object).then(respond(ee, event)))
       .catch(error(ee, event))
   })
 
   ee.on('/documents/update', (event) => {
+    if (!event.object._id) event.object._id = uuid.v4()
     verify(event.actor.token)
       .then((decoded) => db.put(event.object).then(respond(ee, event)))
       .catch(error(ee, event))
@@ -82,7 +88,12 @@ module.exports = (ee, options) => {
 
   ee.on('/documents/remove', (event) => {
     verify(event.actor.token)
-      .then((decoded) => db.remove(event.object).then(respond(ee, event)))
+      .then((decoded) => {
+        db.upsert(event.object, function (doc) {
+          doc._deleted = true
+          return doc
+        }).then(respond(ee, event))
+      })
       .catch(error(ee, event))
   })
 }

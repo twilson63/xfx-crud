@@ -1,4 +1,6 @@
 var h = require('xfx').h
+var xtend = require('xfx').xtend
+
 var bindState = require('xfx').bindState
 var update = require('xfx').update
 
@@ -9,18 +11,26 @@ module.exports = component
 component.render = form
 
 function component () {
-  var state = { data: {}, mode: 'html' }
-  state.actions = bindState({
-    setMode: function (state, mode) {
-      state.mode = mode
-      update()
+  var state = {
+    data: {
+      type: 'document',
+      name: 'untitled.html',
+      body: ''
     },
-    submit: function (state, body) {
-      page('/create', { body: {
-        type: body.type,
-        name: body.name,
-        body: body.body
-      }})
+    mode: 'html',
+  }
+  state.actions = bindState({
+    save: function (state, close) {
+      var editor = ace.edit('editor')
+      if (state.data.name === 'untitled.html') {
+        state.data.name = prompt('Enter Filename', state.data.name)
+        var target = close ? '/document/close' : '/document/save'
+        var data = xtend({}, state.data)
+        // clear data
+        state.data = { name: 'untitled.html' }
+        // this could be passed in via init - state.submit(...)
+        page(target, { body: data })
+      }
     }
   }, state)
   return state

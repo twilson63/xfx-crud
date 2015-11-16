@@ -1,6 +1,9 @@
 var h = require('xfx').h
 var xtend = require('xfx').xtend
 
+var spacer = require('./spacer')
+var iconButton = require('./icon-button')
+
 module.exports = (title, ref, style) => {
   var s = xtend({
     height: '80px',
@@ -25,8 +28,13 @@ module.exports = (title, ref, style) => {
     h('.mdl-card__actions.mdl-card--border', [
       h("a.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect",
         { href: ref }, [
-        title
-      ])
+        title.split('.')[0]
+      ]),
+      //spacer(),
+      iconButton('a', 'delete', {
+        href: '/remove' + ref,
+        style: { float: 'right'}
+      })
     ])
   ])
 }

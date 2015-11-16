@@ -1,6 +1,6 @@
 var app = require('xfx')
 
-var main = require('./components/main')
+var main = require('./components/main2')
 var state = app(main)
 
 /** palmetto flow **/
@@ -20,8 +20,9 @@ page('/login', auth.login)
 page('/logout', auth.logout)
 page('/folder', routes.folder)
 page('/update', routes.update)
-page('/create', routes.create)
-page('/remove', routes.remove)
+page('/document/save', routes.save)
+page('/document/close', routes.close)
+page('/remove/:id', routes.remove)
 page('/new', routes.new)
 
 page('/:id', routes.show)

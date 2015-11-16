@@ -1,3 +1,5 @@
+global.window = require('global').window
+
 var test = require('tap').test
 var toHTML = require('vdom-to-html')
 

@@ -5,6 +5,7 @@ var sendClick = require('xfx').sendClick
 var when = require('../lib/when-then')
 
 var ace = require('brace')
+
 require('brace/mode/javascript')
 require('brace/mode/html')
 require('brace/mode/markdown')
@@ -17,13 +18,23 @@ var fab = require('./helpers/fab')
 var form = require('./helpers/form')
 var hidden = require('./helpers/hiddenfield')
 
+var header = require('./helpers/header')
+var headerRow = require('./helpers/header-row')
+var fab = require('./helpers/fab')
+var fabColored = require('./helpers/fab-colored')
+
+var title = require('./helpers/title')
+var spacer = require('./helpers/spacer')
+
+var content = require('./helpers/content')
+
 module.exports = (state) => {
   function Hook() {}
   Hook.prototype.hook = (node, propertyName, previousValue) => {
     setTimeout(function() {
-      var model = document.querySelector('#docBody')
+      //var model = document.querySelector('#docBody')
       var editor = ace.edit(node)
-      editor.$blockScrolling = Infinity
+      //editor.$blockScrolling = Infinity
       var session = editor.getSession()
       //session.setMode('ace/mode/javascript')
       if (state.data.name && ~state.data.name.indexOf('.js')) {
@@ -43,33 +54,40 @@ module.exports = (state) => {
       }
       editor.setTheme('ace/theme/monokai')
       // sync editor and input
-      session.setValue(model.value)
+      session.setValue(state.data.body)
       editor.getSession().on('change', function() {
-        model.value = editor.getSession().getValue()
+        state.data.body = editor.getSession().getValue()
       })
 
-    }, 100)
+    }, 200)
   }
 
   var action = state.data._id ? '/update' : '/create'
   var cancel = state.folder_id ? state.folder_id : ''
-  return h('form', { 'ev-submit': sendSubmit(state.actions.submit) }, [
-    hidden('type', 'document'),
-    when(state.data._id).then(() => hidden('_id', state.data._id)),
-    when(state.data._rev).then(() => hidden('_rev', state.data._rev)),
-    h('input#docBody', { type: 'hidden', name: 'body', value: state.data.body}),
-    h('div', { id: 'editor', 'my-hook': new Hook(), style: {height: '400px'}}),
-    fab('done', { position: 'absolute', right: '100px' }), //, { position: 'absolute', top: '63px', right: '100px', 'z-index': '1000'}),
-    h('a.mdl-button.mdl-js-button.mdl-button--fab', {
-      href: '/' + cancel,
-      style: { position: 'absolute', right: '30px' }}, [
-      h('i.material-icons', 'close')
+  return [
+    header([
+      headerRow([
+        title([
+          h('span.mdl-layout--large-screen-only','C2C'),
+          when(state.name).then(() => ' * ' + state.name)
+        ]),
+        spacer(),
+        // fab('button', 'save', {
+        //   'ev-click': sendClick(state.actions.save, false),
+        //   style: {
+        //     marginRight: '10px'
+        //   }
+        // }),
+        fabColored('button', 'keyboard_backspace', {
+          'ev-click': sendClick(state.actions.save, true)
+        })
+      ]),
     ]),
-    when(state.data._id).then(() => h('a.mdl-button.mdl-js-button.mdl-button--fab', {
-      'ev-click': sendClick(state.actions.remove),
-      style: { position: 'absolute', left: '30px' }}, [
-      h('i.material-icons', 'delete')
-    ])),
-    textfield('name', state.data.name, 'Name', { marginLeft: '150px'})
-  ])
+    content([
+      h('form', [
+        h('div', { id: 'editor', 'my-hook': new Hook(), style: { height: '400px'}})
+      ])
+
+    ])
+  ]
 }
