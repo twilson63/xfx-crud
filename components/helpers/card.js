@@ -4,11 +4,14 @@ var xtend = require('xfx').xtend
 var spacer = require('./spacer')
 var iconButton = require('./icon-button')
 
-module.exports = (title, ref, style) => {
-  var s = xtend({
-    height: '80px',
-    width: '150px'
-  }, style)
+module.exports = (title, ref, showIconButton, options) => {
+  options = xtend({
+    style: {
+      height: '80px',
+      width: '150px'
+    }
+  }, options || {})
+
   var bkg = "/images/folder.jpg"
   if (~title.indexOf('.js')) {
     bkg = "/images/js.jpg"
@@ -20,7 +23,7 @@ module.exports = (title, ref, style) => {
     bkg = "/images/html.png"
   }
   return h('.mdl-card.mdl-shadow--2dp',
-    { style: s}, [
+    options, [
     h('.mdl-card--title.mdl-card--expand', {
       style: {
       background: 'url("' + bkg + '") center / contain no-repeat' }
@@ -33,7 +36,7 @@ module.exports = (title, ref, style) => {
       //spacer(),
       iconButton('a', 'delete', {
         href: '/remove' + ref,
-        style: { float: 'right'}
+        style: { float: 'right', display: showIconButton ? 'inline' : 'none' }
       })
     ])
   ])

@@ -1,13 +1,37 @@
 var h = require('xfx').h
 var when = require('../lib/when-then')
+var sendMouse = require('value-event-mouse')
+var bindState = require('xfx').bindState
+var update = require('xfx').update
 
 module.exports = component
 component.render = render
 
 function component () {
-  return {
+  var state = {
     data: [{ name: 'one.md', _id: 1}],
   }
+  state.actions = bindState({
+    enter: function (state, id) {
+      state.data = state.data.map(function (v) {
+        if (v._id === id) {
+          v.showIconButton = true
+        }
+        return v
+      })
+      update()
+    },
+    leave: function (state, id) {
+      state.data = state.data.map(function (v) {
+        if (v._id === id) {
+          v.showIconButton = false
+        }
+        return v
+      })
+      update()
+    }
+  }, state)
+  return state
 }
 
 var grid = require('./helpers/grid')
@@ -28,7 +52,10 @@ var _ = require('underscore')
 function render (state) {
   var li = (v) => {
     return cell(2, [
-      card(_(v.name.split('/')).last(), '/' + v._id)
+      card(_(v.name.split('/')).last(), '/' + v._id, v.showIconButton || false, {
+        'ev-mouseenter': sendMouse('enter', state.actions.enter, v._id),
+        'ev-mouseleave': sendMouse('leave', state.actions.leave, v._id)
+      })
     ])
   }
 
