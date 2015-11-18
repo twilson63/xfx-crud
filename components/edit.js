@@ -17,7 +17,12 @@ function component () {
       page('/remove', { body: state.data })
     },
     save: function (state, close) {
-      page('/update', { body: state.data })
+      if (!close) {
+        page('/document/save', { body: state.data })
+      } else {
+        page('/update', { body: state.data })
+      }
+
     }
   }, state)
   return state

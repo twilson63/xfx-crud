@@ -62,7 +62,11 @@ function component() {
       page('/remove', { body: state.data });
     },
     save: function save(state, close) {
-      page('/update', { body: state.data });
+      if (!close) {
+        page('/document/save', { body: state.data });
+      } else {
+        page('/update', { body: state.data });
+      }
     }
   }, state);
   return state;
@@ -138,14 +142,12 @@ module.exports = function (state) {
   var cancel = state.folder_id ? state.folder_id : '';
   return [header([headerRow([title([h('span.mdl-layout--large-screen-only', 'C2C'), when(state.name).then(function () {
     return ' * ' + state.name;
-  })]), spacer(),
-  // fab('button', 'save', {
-  //   'ev-click': sendClick(state.actions.save, false),
-  //   style: {
-  //     marginRight: '10px'
-  //   }
-  // }),
-  fabColored('button', 'keyboard_backspace', {
+  })]), spacer(), fab('button', 'save', {
+    'ev-click': sendClick(state.actions.save, false),
+    style: {
+      marginRight: '10px'
+    }
+  }), fabColored('button', 'keyboard_backspace', {
     'ev-click': sendClick(state.actions.save, true)
   })])]), content([h('form', [h('div', { id: 'editor', 'my-hook': new Hook(), style: { height: '400px' } })])])];
 };
@@ -54557,6 +54559,7 @@ module.exports = function (state, documents) {
         ctx.state.body.parent_id = state.list.folder_id;
       }
       documents.update(ctx.state.body, state.id_token).then(function (result) {
+        console.log(result);
         page('/' + result.id);
       });
     },

@@ -72,12 +72,12 @@ module.exports = (state) => {
           when(state.name).then(() => ' * ' + state.name)
         ]),
         spacer(),
-        // fab('button', 'save', {
-        //   'ev-click': sendClick(state.actions.save, false),
-        //   style: {
-        //     marginRight: '10px'
-        //   }
-        // }),
+        fab('button', 'save', {
+          'ev-click': sendClick(state.actions.save, false),
+          style: {
+            marginRight: '10px'
+          }
+        }),
         fabColored('button', 'keyboard_backspace', {
           'ev-click': sendClick(state.actions.save, true)
         })

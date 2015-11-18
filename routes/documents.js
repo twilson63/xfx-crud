@@ -69,9 +69,9 @@ module.exports = (state, documents) => {
         ctx.state.body.parent_id = state.list.folder_id
       }
       documents.update(ctx.state.body, state.id_token).then((result) => {
+        console.log(result)
         page('/' + result.id)
       })
-
     },
     close: (ctx) => {
       ctx.state.body.profile = state.profile
