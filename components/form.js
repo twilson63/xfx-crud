@@ -34,7 +34,10 @@ module.exports = (state) => {
     setTimeout(function() {
       //var model = document.querySelector('#docBody')
       var editor = ace.edit(node)
-      //editor.$blockScrolling = Infinity
+      // var h = window.getComputedStyle(document.body).height
+      // document.querySelector('#editor').setAttribute('style', 'height: ' + h)
+
+      editor.$blockScrolling = Infinity
       var session = editor.getSession()
       //session.setMode('ace/mode/javascript')
       if (state.data.name && ~state.data.name.indexOf('.js')) {
@@ -85,7 +88,7 @@ module.exports = (state) => {
     ]),
     content([
       h('form', [
-        h('div', { id: 'editor', 'my-hook': new Hook(), style: { height: '400px'}})
+        h('div', { id: 'editor', 'my-hook': new Hook(), style: {height: '1000px'}})
       ])
 
     ])

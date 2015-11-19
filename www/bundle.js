@@ -111,7 +111,10 @@ module.exports = function (state) {
     setTimeout(function () {
       //var model = document.querySelector('#docBody')
       var editor = ace.edit(node);
-      //editor.$blockScrolling = Infinity
+      // var h = window.getComputedStyle(document.body).height
+      // document.querySelector('#editor').setAttribute('style', 'height: ' + h)
+
+      editor.$blockScrolling = Infinity;
       var session = editor.getSession();
       //session.setMode('ace/mode/javascript')
       if (state.data.name && ~state.data.name.indexOf('.js')) {
@@ -149,7 +152,7 @@ module.exports = function (state) {
     }
   }), fabColored('button', 'keyboard_backspace', {
     'ev-click': sendClick(state.actions.save, true)
-  })])]), content([h('form', [h('div', { id: 'editor', 'my-hook': new Hook(), style: { height: '400px' } })])])];
+  })])]), content([h('form', [h('div', { id: 'editor', 'my-hook': new Hook(), style: { height: '1000px' } })])])];
 };
 
 },{"../lib/when-then":25,"./helpers/content":6,"./helpers/fab":8,"./helpers/fab-colored":7,"./helpers/form":9,"./helpers/header":12,"./helpers/header-row":11,"./helpers/hiddenfield":13,"./helpers/spacer":16,"./helpers/textfield":17,"./helpers/title":18,"brace":30,"brace/mode/css":31,"brace/mode/html":32,"brace/mode/javascript":33,"brace/mode/markdown":34,"brace/theme/monokai":35,"xfx":229,"xfx/h":228}],4:[function(require,module,exports){
