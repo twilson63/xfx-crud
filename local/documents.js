@@ -2,7 +2,7 @@ var P = require('bluebird')
 var PouchDB = require('pouchdb')
 PouchDB.plugin(require('pouchdb-upsert'))
 
-var db = PouchDB('documents')
+//var db = PouchDB('documents')
 //var jwt = require('jsonwebtoken')
 var respond = require('../lib/palmetto-respond').respond
 var error = require('../lib/palmetto-respond').error
@@ -11,6 +11,7 @@ var uuid = require('uuid')
 module.exports = (ee, options) => {
   var secret = null
   var remoteDb = null
+  var db = null
 
   function verify (token) {
     return new P((resolve, reject) => {
@@ -23,6 +24,7 @@ module.exports = (ee, options) => {
   }
 
   ee.on('/documents/sync', (event) => {
+    db = PouchDB(event.object.user_id)
     secret = event.object.secret
     remoteDb = PouchDB(event.object.remoteDb)
     PouchDB.sync(db, remoteDb, {

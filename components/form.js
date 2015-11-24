@@ -38,6 +38,7 @@ module.exports = (state) => {
       // document.querySelector('#editor').setAttribute('style', 'height: ' + h)
 
       editor.$blockScrolling = Infinity
+      editor.setAutoScrollEditorIntoView(true)
       var session = editor.getSession()
       //session.setMode('ace/mode/javascript')
       if (state.data.name && ~state.data.name.indexOf('.js')) {
@@ -88,7 +89,7 @@ module.exports = (state) => {
     ]),
     content([
       h('form', [
-        h('div', { id: 'editor', 'my-hook': new Hook(), style: {height: '1000px'}})
+        h('div', { id: 'editor', 'my-hook': new Hook(), style: { height: '600px'}})
       ])
 
     ])

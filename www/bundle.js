@@ -115,6 +115,7 @@ module.exports = function (state) {
       // document.querySelector('#editor').setAttribute('style', 'height: ' + h)
 
       editor.$blockScrolling = Infinity;
+      editor.setAutoScrollEditorIntoView(true);
       var session = editor.getSession();
       //session.setMode('ace/mode/javascript')
       if (state.data.name && ~state.data.name.indexOf('.js')) {
@@ -152,7 +153,7 @@ module.exports = function (state) {
     }
   }), fabColored('button', 'keyboard_backspace', {
     'ev-click': sendClick(state.actions.save, true)
-  })])]), content([h('form', [h('div', { id: 'editor', 'my-hook': new Hook(), style: { height: '1000px' } })])])];
+  })])]), content([h('form', [h('div', { id: 'editor', 'my-hook': new Hook(), style: { height: '600px' } })])])];
 };
 
 },{"../lib/when-then":25,"./helpers/content":6,"./helpers/fab":8,"./helpers/fab-colored":7,"./helpers/form":9,"./helpers/header":12,"./helpers/header-row":11,"./helpers/hiddenfield":13,"./helpers/spacer":16,"./helpers/textfield":17,"./helpers/title":18,"brace":30,"brace/mode/css":31,"brace/mode/html":32,"brace/mode/javascript":33,"brace/mode/markdown":34,"brace/theme/monokai":35,"xfx":229,"xfx/h":228}],4:[function(require,module,exports){
@@ -353,12 +354,14 @@ function component() {
       update();
     },
     leave: function leave(state, id) {
-      state.data = state.data.map(function (v) {
-        if (v._id === id) {
-          v.showIconButton = false;
-        }
-        return v;
-      });
+      if (state.data) {
+        state.data = state.data.map(function (v) {
+          if (v._id === id) {
+            v.showIconButton = false;
+          }
+          return v;
+        });
+      }
       update();
     }
   }, state);
@@ -382,6 +385,7 @@ var _ = require('underscore');
 
 function render(state) {
   var li = function li(v) {
+    v.name = !v.name ? 'untitled' : v.name;
     return cell(2, [card(_(v.name.split('/')).last(), '/' + v._id, v.showIconButton || false, {
       'ev-mouseenter': sendMouse('enter', state.actions.enter, v._id),
       'ev-mouseleave': sendMouse('leave', state.actions.leave, v._id)
@@ -580,7 +584,7 @@ var P = require('bluebird');
 var PouchDB = require('pouchdb');
 PouchDB.plugin(require('pouchdb-upsert'));
 
-var db = PouchDB('documents');
+//var db = PouchDB('documents')
 //var jwt = require('jsonwebtoken')
 var respond = require('../lib/palmetto-respond').respond;
 var error = require('../lib/palmetto-respond').error;
@@ -589,6 +593,7 @@ var uuid = require('uuid');
 module.exports = function (ee, options) {
   var secret = null;
   var remoteDb = null;
+  var db = null;
 
   function verify(token) {
     return new P(function (resolve, reject) {
@@ -601,6 +606,7 @@ module.exports = function (ee, options) {
   }
 
   ee.on('/documents/sync', function (event) {
+    db = PouchDB(event.object.user_id);
     secret = event.object.secret;
     remoteDb = PouchDB(event.object.remoteDb);
     PouchDB.sync(db, remoteDb, {
@@ -54491,6 +54497,7 @@ module.exports = function (state, documents) {
 
 var page = require('page');
 var update = require('xfx').update;
+var uuid = require('uuid');
 
 module.exports = function (state, documents) {
   return Object.freeze({
@@ -54535,6 +54542,7 @@ module.exports = function (state, documents) {
       documents.get(ctx.params.id, state.id_token).then(function (doc) {
         if (doc.type === 'document') {
           state.list.data = null;
+          state.edit.session = uuid.v4();
           state.edit.data = doc;
           state.edit.folder_id = state.list.folder_id;
           state.route = 'edit';
@@ -54586,6 +54594,8 @@ module.exports = function (state, documents) {
         ctx.state.body.parent_id = state.list.folder_id;
       }
       documents.update(ctx.state.body, state.id_token).then(function (result) {
+        state.edit.data = null;
+
         if (state.list.folder) {
           return page.redirect('/' + state.list.folder_id);
         }
@@ -54603,7 +54613,7 @@ module.exports = function (state, documents) {
   });
 };
 
-},{"page":69,"xfx":229}],235:[function(require,module,exports){
+},{"page":69,"uuid":186,"xfx":229}],235:[function(require,module,exports){
 'use strict';
 
 var P = require('bluebird');

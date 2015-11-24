@@ -1,11 +1,13 @@
 var page = require('page')
 var update = require('xfx').update
+var uuid = require('uuid')
 
 module.exports = (state, documents) => {
   return Object.freeze({
     folder: (ctx) => {
       state.route = 'list'
       var folder = prompt('Enter Folder Name', 'default')
+
       if (state.list.folder) { folder = state.list.folder + '/' + folder}
 
       documents.create({
@@ -44,6 +46,7 @@ module.exports = (state, documents) => {
       documents.get(ctx.params.id, state.id_token).then((doc) => {
         if (doc.type === 'document') {
           state.list.data = null
+          state.edit.session = uuid.v4()
           state.edit.data = doc
           state.edit.folder_id = state.list.folder_id
           state.route = 'edit'
@@ -93,6 +96,8 @@ module.exports = (state, documents) => {
         ctx.state.body.parent_id = state.list.folder_id
       }
       documents.update(ctx.state.body, state.id_token).then((result) => {
+        state.edit.data = null
+
         if (state.list.folder) {
           return page.redirect('/' + state.list.folder_id)
         }

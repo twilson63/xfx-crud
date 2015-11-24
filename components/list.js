@@ -22,12 +22,14 @@ function component () {
       update()
     },
     leave: function (state, id) {
-      state.data = state.data.map(function (v) {
-        if (v._id === id) {
-          v.showIconButton = false
-        }
-        return v
-      })
+      if (state.data) {
+        state.data = state.data.map(function (v) {
+          if (v._id === id) {
+            v.showIconButton = false
+          }
+          return v
+        })
+      }
       update()
     }
   }, state)
@@ -51,6 +53,7 @@ var _ = require('underscore')
 
 function render (state) {
   var li = (v) => {
+    v.name = (!v.name) ? 'untitled' : v.name 
     return cell(2, [
       card(_(v.name.split('/')).last(), '/' + v._id, v.showIconButton || false, {
         'ev-mouseenter': sendMouse('enter', state.actions.enter, v._id),
