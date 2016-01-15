@@ -639,6 +639,9 @@ module.exports = function (ee, options) {
   });
 
   ee.on('/documents/list', function (event) {
+    if (!db) {
+      return respond(ee, event)([]);
+    }
     verify(event.actor.token).then(function (decoded) {
       return db.query(function (doc) {
         if (!doc.parent) {
@@ -54504,6 +54507,7 @@ module.exports = function (state, documents) {
     folder: function folder(ctx) {
       state.route = 'list';
       var folder = prompt('Enter Folder Name', 'default');
+
       if (state.list.folder) {
         folder = state.list.folder + '/' + folder;
       }

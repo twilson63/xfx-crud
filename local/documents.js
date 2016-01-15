@@ -53,6 +53,7 @@ module.exports = (ee, options) => {
   })
 
   ee.on('/documents/list', (event) => {
+    if (!db) { return respond(ee, event)([]) }
     verify(event.actor.token).then((decoded) => db.query(function (doc) {
       if (!doc.parent) {
         emit({ _id: doc._id, name: doc.name })
